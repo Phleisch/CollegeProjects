@@ -10,14 +10,15 @@ public class RubiksCube extends Applet implements MouseListener, KeyListener {
     private Image backBuffer;
     private Graphics backG;
 
-    private static final int APP_W = 900;
-    private static final int APP_H = 900;
-    static final Point ORIGIN = new Point(APP_W/2,APP_H/2,0);
+    private static final int APP_W = 800;
+    private static final int APP_H = 800;
+    static final Point ORIGIN = new Point(APP_W / 2, APP_H / 2, 0);
 
     private final int SIDE_LENGTH = (int) ((APP_W - 15) / (3.0 * Math.sqrt(3)));
-    private final int CORNER_HYP = (int) ((3 * SIDE_LENGTH) / Math.sqrt(2));
-    private final int INNER_HYP = CORNER_HYP / 3;
-    private final int EDGE_HYP = (int) ((Math.sqrt(5) * SIDE_LENGTH) / (Math.sqrt(2)));
+    private final int CORNER_RAD = (int) ((3 * SIDE_LENGTH) / Math.sqrt(2));
+    private final int INNER_RAD = CORNER_RAD / 3;
+    //From origin
+    private final int EDGE_RAD = (int) ((Math.sqrt(5) * SIDE_LENGTH) / (Math.sqrt(2)));
     private Point[][] pointArrays = new Point[4][1]; //{corners,edges1,edges2,iCorners};
     private Face primary;
     private CenterPiece[] pieces = new CenterPiece[9];
@@ -39,13 +40,13 @@ public class RubiksCube extends Applet implements MouseListener, KeyListener {
         Point[] iCorners = new Point[4];
         for (int point = 0; point < 4; point++) {
             corners[point] = new Point(ORIGIN,
-                    (Math.PI / 4.0) + (Math.PI * (point)) / 2.0, CORNER_HYP);
+                    (Math.PI / 4.0) + (Math.PI * (point)) / 2.0, CORNER_RAD);
             edges1[point] = new Point(ORIGIN,
-                    Math.atan(1.0/3.0) + (Math.PI * (point)) / 2.0, EDGE_HYP);
+                    Math.atan(1.0 / 3.0) + (Math.PI * (point)) / 2.0, EDGE_RAD);
             edges2[point] = new Point(ORIGIN,
-                    Math.atan(3.0) + (Math.PI * (point)) / 2.0, EDGE_HYP);
+                    Math.atan(3.0) + (Math.PI * (point)) / 2.0, EDGE_RAD);
             iCorners[point] = new Point(ORIGIN,
-                    (Math.PI / 4.0) + (Math.PI * (point)) / 2.0, INNER_HYP);
+                    (Math.PI / 4.0) + (Math.PI * (point)) / 2.0, INNER_RAD);
         }
         pointArrays[0] = corners;
         pointArrays[1] = edges1;
@@ -108,7 +109,7 @@ public class RubiksCube extends Applet implements MouseListener, KeyListener {
 
         int index = 0;
 
-        for(Sticker s : stickers) {
+        for (Sticker s : stickers) {
             pieces[index++] = new CenterPiece(s);
         }
 
@@ -122,12 +123,13 @@ public class RubiksCube extends Applet implements MouseListener, KeyListener {
 
     public void update(Graphics g) {
         //int random = (int) (Math.random() * 256);
-        backG.setColor(new Color(140,140,140));
-        backG.fillRect(0,0, APP_W, APP_H);
+        backG.setColor(new Color(140, 140, 140));
+        backG.fillRect(0, 0, APP_W, APP_H);
         primary.draw(backG);
+        backG.fillRect(0, 0, 1, 1);
 
         for (Point[] points : pointArrays)
-            for (Point point : points) point.addAngle(Math.PI / 180);
+            for (Point point : points) point.addAngle(Math.PI * 0 / 180);
         g.drawImage(backBuffer, 0, 0, this);
         repaint();
     }
@@ -148,6 +150,28 @@ public class RubiksCube extends Applet implements MouseListener, KeyListener {
     }
 */
 
+    private void cubeBuilder() {
+        //8 corners on a cube, so 8 corner points
+        Point[] cornerPoints = new Point[8];
+        //24 points that construct all 12 edges of the cube (2 points per edge)
+        Point[] edgePoints = new Point[24];
+        //24 points that construct the 6 faces of the cube that aren't on corners or edge (4 per face)
+        Point[] facePoints = new Point[24];
+        calculatePoints(cornerPoints, edgePoints, facePoints);
+    }
+
+    private void calculatePoints(Point[] cP, Point[] eP, Point[] fP) {
+        //cornerPoints
+        double[] angles = {Math.PI / 4.0, 7.0 * Math.PI / 4.0, 5.0 * Math.PI / 4.0, 3.0 * Math.PI / 4.0};
+        for (int corner = 0; corner < 4; corner++)
+            cP[corner] = new Point(ORIGIN, Math.sin(angles[0]) * CORNER_RAD, angles[corner], CORNER_RAD);
+        for (int corner = 0; corner < 4; corner++)
+            cP[corner + 4] = new Point(ORIGIN, Math.sin(angles[1]) * CORNER_RAD, angles[corner], CORNER_RAD);
+
+        ///////////////////////////////////////////////////////
+
+    }
+
     /**
      * Invoked when a key has been typed.
      * See the class description for {@link KeyEvent} for a definition of
@@ -156,7 +180,8 @@ public class RubiksCube extends Applet implements MouseListener, KeyListener {
      * @param e Object detailing the event
      */
     @Override
-    public void keyTyped(KeyEvent e) { }
+    public void keyTyped(KeyEvent e) {
+    }
 
     /**
      * Invoked when a key has been pressed.
@@ -166,7 +191,8 @@ public class RubiksCube extends Applet implements MouseListener, KeyListener {
      * @param e Object detailing the event
      */
     @Override
-    public void keyPressed(KeyEvent e) { }
+    public void keyPressed(KeyEvent e) {
+    }
 
     /**
      * Invoked when a key has been released.
@@ -176,7 +202,8 @@ public class RubiksCube extends Applet implements MouseListener, KeyListener {
      * @param e Object detailing the event
      */
     @Override
-    public void keyReleased(KeyEvent e) { }
+    public void keyReleased(KeyEvent e) {
+    }
 
     /**
      * Invoked when the mouse button has been clicked (pressed
@@ -215,7 +242,8 @@ public class RubiksCube extends Applet implements MouseListener, KeyListener {
      * @param e Object detailing the event
      */
     @Override
-    public void mouseEntered(MouseEvent e) { }
+    public void mouseEntered(MouseEvent e) {
+    }
 
     /**
      * Invoked when the mouse exits a component.
@@ -223,5 +251,6 @@ public class RubiksCube extends Applet implements MouseListener, KeyListener {
      * @param e Object detailing the event
      */
     @Override
-    public void mouseExited(MouseEvent e) { }
+    public void mouseExited(MouseEvent e) {
+    }
 }

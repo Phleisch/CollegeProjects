@@ -73,9 +73,26 @@ public class Point {
      * @param oD value to initialize originDistance.
      */
     public Point(Point origin, double angle, double oD) {
-        //Set Z = 0 for now because I have no idea what to do
         this(oD * Math.cos(angle) + origin.x,
-                origin.y - oD * Math.sin(angle),0);
+                origin.y - oD * Math.sin(angle),origin.z + oD * Math.sin(angle));
+        this.angle = angle;
+        originDistance = oD;
+    }
+
+    /**
+     * Constructs a MOVING Point with an origin
+     * Point, angle of this Point's path, distance
+     * from origin. This automates the creation
+     * of X, Y, Z coordinates.
+     *
+     * @param origin origin of the plane this point
+     * lies on.
+     * @param angle value to initialize angle.
+     * @param oD value to initialize originDistance.
+     */
+    public Point(Point origin, double z, double angle, double oD) {
+        this(oD * Math.cos(angle) + origin.x,
+                origin.y - oD * Math.sin(angle),origin.z + z);
         this.angle = angle;
         originDistance = oD;
     }
